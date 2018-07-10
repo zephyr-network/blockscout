@@ -6,7 +6,7 @@ defmodule Indexer.SequenceTest do
   describe "pop/1" do
     # first pops the head of the list and not of the queue
     # and pops the head of the queue at the end
-    test "doesn't pops the head the queue in :infinite mode" do
+    test "always pops the head the queue first in :infinite mode" do
       initial_ranges = [5..7, 3..5, 1..3]
 
       {:ok, pid} = Sequence.start_link(initial_ranges, 4, 1)
@@ -35,7 +35,7 @@ defmodule Indexer.SequenceTest do
 
     # first pops the head of the list and not of the queue
     # and pops the head of the queue at the end
-    test "doesn't pops the head the queue in :finite mode" do
+    test "always pops the head the queue first in :finite mode" do
       initial_ranges = [5..7, 3..5, 1..3]
       {:ok, pid} = Sequence.start_link(initial_ranges, 4, 1)
       Sequence.cap(pid)
