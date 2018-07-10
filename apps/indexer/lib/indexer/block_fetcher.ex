@@ -83,8 +83,8 @@ defmodule Indexer.BlockFetcher do
 
     scheduled_state =
       state
-      |> schedule_next_catchup_index()
       |> schedule_next_realtime_fetch()
+      # |> schedule_next_catchup_index()
 
     {:ok, scheduled_state}
   end
@@ -267,7 +267,7 @@ defmodule Indexer.BlockFetcher do
     |> InternalTransactionFetcher.async_fetch(10_000)
   end
 
-  defp missing_block_number_ranges(%{blocks_batch_size: blocks_batch_size}, range) do
+  def missing_block_number_ranges(%{blocks_batch_size: blocks_batch_size}, range) do
     range
     |> Chain.missing_block_number_ranges()
     |> chunk_ranges(blocks_batch_size)
@@ -294,8 +294,8 @@ defmodule Indexer.BlockFetcher do
   end
 
   defp realtime_task(%{} = state) do
-    {:ok, latest_block_number} = Chain.max_block_number()
-    {:ok, seq} = Sequence.start_link([], latest_block_number, 2)
+    {:ok, latest_block_number} = EthereumJSONRPC.fetch_block_number_by_tag("latest")
+    {:ok, seq} = Sequence.start_link([], (latest_block_number - 2), 2)
     stream_import(state, seq, max_concurrency: 1)
   end
 
