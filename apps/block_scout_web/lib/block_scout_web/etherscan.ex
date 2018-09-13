@@ -1413,6 +1413,11 @@ defmodule BlockScoutWeb.Etherscan do
     actions: [@transaction_gettxreceiptstatus_action]
   }
 
+  @transaction_module %{
+    name: "transaction",
+    actions: [@transaction_gettxreceiptstatus_action]
+  }
+
   @documentation [
     @account_module,
     @logs_module,
