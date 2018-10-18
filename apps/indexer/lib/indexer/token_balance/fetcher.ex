@@ -13,9 +13,9 @@ defmodule Indexer.TokenBalance.Fetcher do
 
   @defaults [
     flush_interval: 300,
-    max_batch_size: 1,
-    max_concurrency: 10,
-    init_chunk_size: 1,
+    max_batch_size: 500,
+    max_concurrency: 4,
+    init_chunk_size: 1000,
     task_supervisor: Indexer.TokenBalance.TaskSupervisor
   ]
 
@@ -45,6 +45,8 @@ defmodule Indexer.TokenBalance.Fetcher do
 
   @impl BufferedTask
   def init(initial, reducer, _) do
+    IO.puts "Running the query to fetch unfetched token balances"
+
     {:ok, final} =
       Chain.stream_unfetched_token_balances(initial, fn token_balance, acc ->
         token_balance
@@ -59,9 +61,19 @@ defmodule Indexer.TokenBalance.Fetcher do
   def run(entries, _retries, _json_rpc_named_arguments) do
     Logger.debug(fn -> "fetching #{length(entries)} token balances" end)
 
+    token_balance_params = Enum.map(entries, &format_params/1)
+
+    Enum.each(token_balance_params, fn token_balance ->
+      Logger.debug(
+        [
+          "Fetching balance token: #{token_balance.token_contract_address_hash} address: #{token_balance.address_hash} block_number: #{token_balance.block_number}"
+        ],
+        fetcher: :token_balance_temp
+      )
+    end)
+
     result =
-      entries
-      |> Enum.map(&format_params/1)
+      token_balance_params
       |> fetch_from_blockchain()
       |> import_token_balances()
 

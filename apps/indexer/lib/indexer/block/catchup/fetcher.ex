@@ -136,6 +136,18 @@ defmodule Indexer.Block.Catchup.Fetcher do
   defp async_import_internal_transactions(_, _), do: :ok
 
   defp async_import_token_balances(%{address_token_balances: token_balances}) do
+    Enum.each(token_balances, fn token_balance ->
+      token = to_string(token_balance.token_contract_address_hash)
+      address = to_string(token_balance.address_hash)
+
+      Logger.debug(
+        [
+          "Params sent by catchup token: #{token} address: #{address} block_number: #{token_balance.block_number}"
+        ],
+        fetcher: :token_balance_catchup
+      )
+    end)
+
     TokenBalance.Fetcher.async_fetch(token_balances)
   end
 

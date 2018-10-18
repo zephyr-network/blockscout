@@ -99,8 +99,7 @@ defmodule Indexer.Block.Realtime.Fetcher do
              addresses_params: internal_transactions_addresses_params,
              balances_params: address_coin_balances_params
            }),
-         {:ok, address_token_balances} <-
-           TokenBalances.fetch_token_balances_from_blockchain(address_token_balances_params),
+         {:ok, address_token_balances} <- fetch_token_balances_from_blockchain(address_token_balances_params),
          chain_import_options =
            options
            |> Map.drop(@import_options)
@@ -114,6 +113,11 @@ defmodule Indexer.Block.Realtime.Fetcher do
       async_import_remaining_block_data(imported)
       ok
     end
+  end
+
+  defp fetch_token_balances_from_blockchain(address_token_balances_params) do
+    IO.inspect address_token_balances_params, label: "realtime"
+    TokenBalances.fetch_token_balances_from_blockchain(address_token_balances_params)
   end
 
   defp start_fetch_and_import(number, block_fetcher, previous_number) do

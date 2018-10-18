@@ -9,6 +9,16 @@ config :logger, :indexer_token_balances,
   path: Path.absname("logs/dev/indexer/token_balances/error.log"),
   metadata_filter: [fetcher: :token_balances]
 
+config :logger, :indexer_token_balances,
+  level: :debug,
+  path: Path.absname("logs/dev/indexer/token_balances/balances_temp.log"),
+  metadata_filter: [fetcher: :token_balance_temp]
+
+config :logger, :indexer_token_balances,
+  level: :debug,
+  path: Path.absname("logs/dev/indexer/token_balances/catchup.log"),
+  metadata_filter: [fetcher: :token_balance_catchup]
+
 variant =
   if is_nil(System.get_env("ETHEREUM_JSONRPC_VARIANT")) do
     "parity"
