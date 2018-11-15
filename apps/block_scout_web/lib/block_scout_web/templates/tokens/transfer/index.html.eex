@@ -17,26 +17,18 @@
 
       <div class="card-body">
         <h2 class="card-title"><%= gettext "Token Transfers" %></h2>
-
-        <%= if Enum.any?(@transfers) do %>
-          <%= for transfer <- @transfers do %>
-            <%= render("_token_transfer.html", conn: @conn, token: @token, transfer: transfer) %>
-          <% end %>
-        <% else %>
-          <div class="tile tile-muted text-center">
-            <span data-selector="empty-transactions-list">
-              <%= gettext "There are no transfers for this Token." %>
-            </span>
+        <div data-token-transfers-listing>
+          <div data-error-message class="alert alert-danger" style="display: none;">
+            <a href="#" class="alert-link" style="pointer-events: none;"><%= gettext("Something went wrong, click to reload") %></a>
           </div>
-        <% end %>
-
-        <%= if @next_page_params do %>
-          <%= link(
-            gettext("Older"),
-            class: "button button-secondary button-small float-right mt-4",
-            to: token_path(@conn, :show, @token.contract_address_hash, @next_page_params)
-          ) %>
-        <% end %>
+          <div data-loading-token-transfers class="tile tile-muted text-center mt-3">
+            <span class="loading-spinner-small mr-2">
+              <span class="loading-spinner-block-1"></span>
+              <span class="loading-spinner-block-2"></span>
+            </span>
+            <%= gettext("Loading") %>...
+          </div>
+        </div>
       </div>
     </div>
   </section>
