@@ -638,9 +638,9 @@ msgstr ""
 #: lib/block_scout_web/templates/block/index.html.eex:30
 #: lib/block_scout_web/templates/block_transaction/index.html.eex:50
 #: lib/block_scout_web/templates/pending_transaction/index.html.eex:41
-#: lib/block_scout_web/templates/tokens/transfer/index.html.eex:35
 #: lib/block_scout_web/templates/transaction/index.html.eex:41
 #: lib/block_scout_web/templates/transaction_token_transfer/index.html.eex:24
+#: lib/block_scout_web/views/tokens/transfer_view.ex:13
 msgid "Older"
 msgstr ""
 
@@ -853,11 +853,6 @@ msgstr ""
 #, elixir-format
 #: lib/block_scout_web/templates/block_transaction/index.html.eex:44
 msgid "There are no transactions for this block."
-msgstr ""
-
-#, elixir-format
-#: lib/block_scout_web/templates/tokens/transfer/index.html.eex:28
-msgid "There are no transfers for this Token."
 msgstr ""
 
 #, elixir-format
@@ -1212,6 +1207,7 @@ msgstr ""
 #: lib/block_scout_web/templates/address_transaction/index.html.eex:61
 #: lib/block_scout_web/templates/block/index.html.eex:22
 #: lib/block_scout_web/templates/pending_transaction/index.html.eex:33
+#: lib/block_scout_web/templates/tokens/transfer/index.html.eex:29
 #: lib/block_scout_web/templates/transaction/index.html.eex:33
 msgid "Loading"
 msgstr ""
@@ -1321,4 +1317,9 @@ msgstr ""
 #, elixir-format
 #: lib/block_scout_web/views/internal_transaction_view.ex:24
 msgid "Static Call"
+msgstr ""
+
+#, elixir-format
+#: lib/block_scout_web/templates/tokens/transfer/index.html.eex:22
+msgid "Something went wrong, click to reload"
 msgstr ""
