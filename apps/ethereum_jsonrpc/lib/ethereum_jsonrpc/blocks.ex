@@ -10,6 +10,40 @@ defmodule EthereumJSONRPC.Blocks do
   @type params :: [Block.params()]
   @type t :: [Block.t()]
 
+  defstruct blocks_params: [],
+            block_second_degree_relations_params: [],
+            transactions_params: [],
+            errors: []
+
+  def from_responses(responses, id_to_params) when is_list(responses) and is_map(id_to_params) do
+    %{errors: errors, blocks: blocks} =
+      responses
+      |> Enum.map(&Block.from_response(&1, id_to_params))
+      |> Enum.reduce(%{errors: [], blocks: []}, fn
+        {:ok, block}, %{blocks: blocks} = acc ->
+          %{acc | blocks: [block | blocks]}
+
+        {:error, error}, %{errors: errors} = acc ->
+          %{acc | errors: [error | errors]}
+      end)
+
+    elixir_blocks = to_elixir(blocks)
+
+    elixir_uncles = elixir_to_uncles(elixir_blocks)
+    elixir_transactions = elixir_to_transactions(elixir_blocks)
+
+    block_second_degree_relations_params = Uncles.elixir_to_params(elixir_uncles)
+    transactions_params = Transactions.elixir_to_params(elixir_transactions)
+    blocks_params = elixir_to_params(elixir_blocks)
+
+    %__MODULE__{
+      errors: errors,
+      blocks_params: blocks_params,
+      block_second_degree_relations_params: block_second_degree_relations_params,
+      transactions_params: transactions_params
+    }
+  end
+
   @doc """
   Converts `t:elixir/0` elements to params used by `Explorer.Chain.Block.changeset/2`.
 
