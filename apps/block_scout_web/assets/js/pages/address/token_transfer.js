@@ -11,17 +11,26 @@ export function reducer (state = initialState, action) {
     case 'LOAD_TRANSFERS': {
       const $element = $('[data-selector="transactions-list"]')
       const $errorMessage = $('[data-selector="error-message"]')
+      const $loadingMessage = $('[data-selector="loading-message"]')
 
       $.getJSON(state.requestLink, {type: 'JSON', block_number: $element.data('lastBlock')})
         .done(response => {
           response = humps.camelizeKeys(response)
+          $loadingMessage.hide()
 
-          $element.data('lastBlock', response.lastBlock)
-          $element.html(response.transfers.join('') + response.nextPageButton)
+          if (response.transfers.length > 0) {
+            $element.data('lastBlock', response.lastBlock)
+            $element.html(response.transfers.join('') + response.nextPageButton)
+            $('[data-selector="next-page-button"]').click((event) => {
+              loadOlderTransactions()
+            })
+          } else {
+            $element.html('')
+            const $noTransactionsMessage = $('[data-selector="no-transactions-message"]')
+            $noTransactionsMessage.show()
+          }
         })
         .fail(fail => {
-          const $loadingMessage = $('[data-selector="loading-message"]')
-
           $errorMessage.show()
           $loadingMessage.hide()
         })
@@ -34,9 +43,11 @@ export function reducer (state = initialState, action) {
 }
 
 const $addressTokenTransferPage = $('[data-page="address-token-transfers"]')
+var loadOlderTransactions = () => {}
 if ($addressTokenTransferPage.length) {
   const store = createStore(reducer)
-  store.dispatch({type: 'LOAD_TRANSFERS'})
+
+  loadOlderTransactions = () => store.dispatch({type: 'LOAD_TRANSFERS'});
 
   $('[data-selector="error-message"]').click((event) => {
     const $errorMessage = $(event.target)
@@ -47,4 +58,6 @@ if ($addressTokenTransferPage.length) {
 
     store.dispatch({type: 'LOAD_TRANSFERS'})
   })
+
+  store.dispatch({type: 'LOAD_TRANSFERS'})
 }

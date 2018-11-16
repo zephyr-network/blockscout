@@ -1,13 +1,75 @@
 defmodule BlockScoutWeb.AddressTokenTransferController do
   use BlockScoutWeb, :controller
 
-  alias Explorer.{Chain, Market}
+  alias BlockScoutWeb.AddressTokenTransferView
+  alias BlockScoutWeb.TransactionView
   alias Explorer.ExchangeRates.Token
+  alias Explorer.{Chain, Market}
+  alias Phoenix.View
 
   import BlockScoutWeb.AddressController, only: [transaction_count: 1, validation_count: 1]
 
   import BlockScoutWeb.Chain,
     only: [next_page_params: 3, paging_options: 1, split_list_by_page: 1]
+
+  def index(
+        conn,
+        %{
+          "address_id" => address_hash_string,
+          "address_token_id" => token_hash_string,
+          "type" => "JSON"
+        } = params
+      ) do
+    with {:ok, address_hash} <- Chain.string_to_address_hash(address_hash_string),
+         {:ok, token_hash} <- Chain.string_to_address_hash(token_hash_string),
+         {:ok, address} <- Chain.hash_to_address(address_hash) do
+      transactions =
+        Chain.address_to_transactions_with_token_transfers(
+          address_hash,
+          token_hash,
+          paging_options(params)
+        )
+
+      {transactions_paginated, next_page} = split_list_by_page(transactions)
+
+      next_page_button =
+        case next_page_params(next_page, transactions_paginated, params) do
+          nil ->
+            ""
+
+          next_page_params ->
+            AddressTokenTransferView.next_page_button(
+              conn,
+              address_hash,
+              token_hash,
+              next_page_params
+            )
+        end
+
+      transfers_json =
+        Enum.map(transactions, fn transaction ->
+          View.render_to_string(
+            TransactionView,
+            "_tile.html",
+            conn: conn,
+            transaction: transaction,
+            current_address: address
+          )
+        end)
+
+      json(conn, %{
+        last_block: 0,
+        next_page_button: next_page_button,
+        transfers: transfers_json
+      })
+    else
+      :error ->
+        unprocessable_entity(conn)
+
+      {:error, :not_found} ->
+        not_found(conn)
+    end
+  end
 
   def index(
         conn,
