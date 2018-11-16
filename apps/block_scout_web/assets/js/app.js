@@ -21,6 +21,7 @@ import 'bootstrap'
 import './locale'
 
 import './pages/address'
+import './pages/address/token_transfer'
 import './pages/blocks'
 import './pages/chain'
 import './pages/pending_transactions'
