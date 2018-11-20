@@ -11,7 +11,7 @@ services:
     environment:
       - ETHEREUM_JSONRPC_VARIANT=parity
       - ETHEREUM_JSONRPC_HTTP_URL=https://main.net.zephyr.network
-      - ETHEREUM_JSONRPC_WS_URL=ws://main.nodes.zephyr.network
+      - ETHEREUM_JSONRPC_WS_URL=ws://main.nodes.zephyr.network:8546
       - COIN=ZYF
       - LOGO=
       - NETWORK=Zephyr
