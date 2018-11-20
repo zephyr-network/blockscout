@@ -1,0 +1,26 @@
+version: "3.7"
+services:
+  blockscout:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    command: /bin/sh -c "mix phx.server"
+    restart: always
+    ports:
+      - 4000:4000
+    environment:
+      - ETHEREUM_JSONRPC_VARIANT=parity
+      - ETHEREUM_JSONRPC_HTTP_URL=https://main.net.zephyr.network
+      - ETHEREUM_JSONRPC_WS_URL=ws://main.nodes.zephyr.network
+      - COIN=ZYF
+      - LOGO=
+      - NETWORK=Zephyr
+      - DB_URL=postgresql://postgres:@postgres:5432/explorer?ssl=false
+      - MIX_ENV=prod
+
+  postgres:
+    image: postgres:10.4
+    restart: always
+    environment:
+      - POSTGRES_USER="postgres"
+      - POSTGRES_PASSWORD=""
